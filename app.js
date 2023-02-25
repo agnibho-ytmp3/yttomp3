@@ -50,6 +50,15 @@ app.post("/convert-mp3", async (req, res) => {
     }
 })
 
+app.disable('etag');
+app.use(function(req, res, next) {
+    res.header("Cache-Control", "no-cache, no-store, must-revalidate");
+    res.header("Pragma", "no-cache");
+    res.header("Expires", 0);
+    next();
+});
+
+
 app.listen(PORT, () => {
     console.log(`Server started on ${PORT}`)
 })
