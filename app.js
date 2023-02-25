@@ -1,7 +1,7 @@
 const express = require("express");
 const fetch = require("node-fetch");
+const ytdl = require('ytdl-core');
 require("dotenv").config();
-
 
 const app = express()
 
@@ -20,15 +20,18 @@ app.get("/", (req, res) => {
 })
 
 app.post("/convert-mp3", async (req, res) => {
-    const videoId = req.body.videoID
-    console.log(videoId);
-    if(
-        videoId === undefined ||
-        videoId === "" ||
-        videoId === null
-    ) {
-        return res.render("index", {success: false, message: "Please enter a video id"});
+    const videoUrl = req.body.videoUrl
+    console.log(videoUrl);
+    if(!videoUrl){
+        return res.render("index", {success: false, message: "Please enter a valid video url"});
     }else{
+        let videoId;
+        try{
+            videoId = ytdl.getVideoID(videoUrl);
+        }catch(err){
+            return res.render("index", {success: false, message: "Please enter a valid video url"});
+        }
+
         const fetchAPI = await fetch(`https://youtube-mp36.p.rapidapi.com/dl?id=${videoId}`, {
             "method": "GET",
             "headers": {
